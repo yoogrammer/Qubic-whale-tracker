@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Live Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <strong>Qubic Dashboard</strong>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="tech.html">Technology</a>
+      <a href="team.html">Team</a>
+    </div>
+  </nav>
+
+  <h2>Live Data Preview (Sample)</h2>
+
+  <div class="table-card">
+    <h3>Token Prices</h3>
+    <table>
+      <tr><th>Token</th><th>Price</th><th>Change</th><th>Updated</th></tr>
+      <tr><td>QBC</td><td>$0.34</td><td class="up">+1.2%</td><td>2 min ago</td></tr>
+      <tr><td>QBL</td><td>$0.01</td><td class="down">-0.4%</td><td>3 min ago</td></tr>
+      <tr><td>QBT</td><td>$1.08</td><td class="up">+2.1%</td><td>1 min ago</td></tr>
+    </table>
+  </div>
+
+  <div class="table-card">
+    <h3>Recent Transactions</h3>
+    <table>
+      <tr><th>Time</th><th>Token</th><th>Amount</th><th>From</th><th>To</th></tr>
+      <tr><td>14:01</td><td>QBC</td><td>320</td><td>qx12ab…98cd</td><td>qx44cd…21aa</td></tr>
+      <tr><td>13:56</td><td>QBL</td><td>5,000</td><td>qx88ff…11aa</td><td>qx12ab…98cd</td></tr>
+      <tr><td>13:40</td><td>QBT</td><td>24</td><td>qx77bb…33cd</td><td>qx55aa…77bb</td></tr>
+    </table>
+  </div>
+
+  <div class="table-card whale">
+    <h3>Whale Transfers</h3>
+    <table>
+      <tr><th>Time</th><th>Token</th><th>Amount</th><th>From</th><th>To</th></tr>
+      <tr><td>12:40</td><td>QBC</td><td>120,000</td><td>qx99aa…44bb</td><td>qx12ab…98cd</td></tr>
+      <tr><td>11:55</td><td>QBT</td><td>45,000</td><td>qx54cc…21ff</td><td>qx88ff…21aa</td></tr>
+    </table>
+  </div>
+
+  <small>Note: Example data only. Live version uses EasyConnect + Google Sheets.</small>
+</body>
+</html>

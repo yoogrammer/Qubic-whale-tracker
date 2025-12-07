@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Live Dashboard</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav>
+        <strong>Qubic Dashboard</strong>
+        <div>
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="tech.html">Technology</a>
+            <a href="team.html">Team</a>
+        </div>
+    </nav>
+
+    <h2>Live Dashboard</h2>
+
+    <section class="controls">
+        <div class="control">
+            <label for="tokenFilter">Filter by token</label>
+            <select id="tokenFilter">
+                <option value="all">All tokens</option>
+            </select>
+        </div>
+
+        <div class="control">
+            <label for="whaleMin">Whale minimum amount</label>
+            <input type="range" id="whaleMin" min="1000" max="200000" step="1000" value="10000">
+            <span id="whaleMinValue">10000</span>
+        </div>
+
+        <div class="control">
+            <label>&nbsp;</label>
+            <button id="refreshBtn" class="btn primary small">Refresh now</button>
+        </div>
+    </section>
+
+    <div class="table-card">
+        <h3>Token Prices</h3>
+        <table id="tokenTable"></table>
+    </div>
+
+    <div class="table-card">
+        <h3>Recent Transactions</h3>
+        <table id="txTable"></table>
+    </div>
+
+    <div class="table-card whale">
+        <h3>Whale Transfers</h3>
+        <table id="whaleTable"></table>
+    </div>
+
+    <small id="lastUpdated" class="muted">
+        Last updated just now
+    </small>
+    <br>
+    <small>Live data powered by EasyConnect and Google Sheets (this is a front end sample)</small>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+
+    <script>
+        // update these three urls with your own sheet api urls
+        const TOKEN_URL = "https://docs.google.com/spreadsheets/d/1OYQyoHRuwNgPWL-NU0CK8CD6ccEdpF19828S3G3E0z8/gviz/tq?tqx=out:json&gid=0";
+        const TX_URL = "https://docs.google.com/spreadsheets/d/1OYQyoHRuwNgPWL-NU0CK8CD6ccEdpF19828S3G3E0z8/gviz/tq?tqx=out:json&gid=1";
+        const WHALE_URL = "https://docs.google.com/spreadsheets/d/1OYQyoHRuwNgPWL-NU0CK8CD6ccEdpF19828S3G3E0z8/gviz/tq?tqx=out:json&gid=2";
+
+
+        let tokenRows = [];
+        let txRows = [];
+        let whaleRows = [];
+
+        let activeTokenFilter = "all";
+        let whaleMinAmount = 10000;
+
+        const tokenTable = document.getElementById("tokenTable");
+        const txTable = document.getElementById("txTable");
+        const whaleTable = document.getElementById("whaleTable");
+        const tokenFilter = document.getElementById("tokenFilter");
+        const whaleMin = document.getElementById("whaleMin");
+        const whaleLabel = document.getElementById("whaleMinValue");
+        const refreshBtn = document.getElementById("refreshBtn");
+        const lastUpdated = document.getElementById("lastUpdated");
+
+        function parseAmount(value) {
+            if (!value) return 0;
+            return parseFloat(String(value).replace(/,/g, "")) || 0;
+        }
+
+        function fetchSheet(url, mapFn) {
+            return fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    const entries = data.feed && data.feed.entry ? data.feed.entry : [];
+                    return entries.map(mapFn);
+                })
+                .catch(err => {
+                    console.error("Error loading", url, err);
+                    return [];
+                });
+        }
+
+        function refreshData(animated = true) {
+            Promise.all([
+                fetchSheet(TOKEN_URL, r => ({
+                    token: r.gsx$token.$t,
+                    price: r.gsx$price.$t,
+                    change: r.gsx$change.$t,
+                    lastupdated: r.gsx$lastupdated.$t
+                })),
+                fetchSheet(TX_URL, r => ({
+                    time: r.gsx$time.$t,
+                    token: r.gsx$token.$t,
+                    amount: r.gsx$amount.$t,
+                    from: r.gsx$from.$t,
+                    to: r.gsx$to.$t
+                })),
+                fetchSheet(WHALE_URL, r => ({
+                    time: r.gsx$time.$t,
+                    token: r.gsx$token.$t,
+                    amount: r.gsx$amount.$t,
+                    from: r.gsx$from.$t,
+                    to: r.gsx$to.$t
+                }))
+            ]).then(([tokens, txs, whales]) => {
+                tokenRows = tokens;
+                txRows = txs;
+                whaleRows = whales;
+
+                updateTokenFilterOptions();
+                renderAll(animated);
+                updateLastUpdated();
+            });
+        }
+
+        function updateTokenFilterOptions() {
+            const tokens = Array.from(new Set([
+                ...tokenRows.map(r => r.token),
+                ...txRows.map(r => r.token),
+                ...whaleRows.map(r => r.token)
+            ])).filter(Boolean).sort();
+
+            const current = tokenFilter.value || "all";
+            let html = `<option value="all">All tokens</option>`;
+            tokens.forEach(t => {
+                html += `<option value="${t}">${t}</option>`;
+            });
+            tokenFilter.innerHTML = html;
+            if (tokens.includes(current)) {
+                tokenFilter.value = current;
+            } else {
+                tokenFilter.value = "all";
+                activeTokenFilter = "all";
+            }
+        }
+
+        function renderTokenTable(animated) {
+            let html = `
+    <tr>
+      <th>Token</th>
+      <th>Price</th>
+      <th>Change</th>
+      <th>Updated</th>
+    </tr>
+  `;
+
+            const rows = tokenRows.filter(r =>
+                activeTokenFilter === "all" || r.token === activeTokenFilter
+            );
+
+            rows.forEach(r => {
+                const changeClass = r.change.startsWith("-") ? "down" : "up";
+                html += `
+      <tr>
+        <td>${r.token}</td>
+        <td>${r.price}</td>
+        <td class="${changeClass}">${r.change}</td>
+        <td>${r.lastupdated}</td>
+      </tr>
+    `;
+            });
+
+            tokenTable.innerHTML = html;
+            if (animated) animateTableRows("tokenTable");
+        }
+
+        function renderTxTable(animated) {
+            let html = `
+    <tr>
+      <th>Time</th>
+      <th>Token</th>
+      <th>Amount</th>
+      <th>From</th>
+      <th>To</th>
+    </tr>
+  `;
+
+            const rows = txRows.filter(r =>
+                activeTokenFilter === "all" || r.token === activeTokenFilter
+            );
+
+            rows.forEach(r => {
+                html += `
+      <tr>
+        <td>${r.time}</td>
+        <td>${r.token}</td>
+        <td>${r.amount}</td>
+        <td>${r.from}</td>
+        <td>${r.to}</td>
+      </tr>
+    `;
+            });
+
+            txTable.innerHTML = html;
+            if (animated) animateTableRows("txTable");
+        }
+
+        function renderWhaleTable(animated) {
+            let html = `
+    <tr>
+      <th>Time</th>
+      <th>Token</th>
+      <th>Amount</th>
+      <th>From</th>
+      <th>To</th>
+    </tr>
+  `;
+
+            const rows = whaleRows.filter(r =>
+                parseAmount(r.amount) >= whaleMinAmount &&
+                (activeTokenFilter === "all" || r.token === activeTokenFilter)
+            );
+
+            rows.forEach(r => {
+                html += `
+      <tr>
+        <td>${r.time}</td>
+        <td>${r.token}</td>
+        <td>${r.amount}</td>
+        <td>${r.from}</td>
+        <td>${r.to}</td>
+      </tr>
+    `;
+            });
+
+            whaleTable.innerHTML = html;
+            if (animated) {
+                animateTableRows("whaleTable");
+                highlightWhaleCard();
+            }
+        }
+
+        function renderAll(animated = true) {
+            renderTokenTable(animated);
+            renderTxTable(animated);
+            renderWhaleTable(animated);
+        }
+
+        function animateTableRows(tableId) {
+            const rows = document.querySelectorAll(`#${tableId} tr`);
+            if (!rows.length || !window.gsap) return;
+
+            gsap.from(rows, {
+                opacity: 0,
+                y: 8,
+                stagger: 0.04,
+                duration: 0.35,
+                ease: "power2.out"
+            });
+        }
+
+        function highlightWhaleCard() {
+            if (!window.gsap) return;
+            const card = document.querySelector(".table-card.whale");
+            if (!card) return;
+
+            gsap.fromTo(card,
+                { boxShadow: "0 0 0 rgba(123,97,255,0)" },
+                {
+                    boxShadow: "0 0 30px rgba(123,97,255,0.6)",
+                    duration: 0.5,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: "power2.out"
+                }
+            );
+        }
+
+        function updateLastUpdated() {
+            const now = new Date();
+            lastUpdated.textContent = "Last updated at " + now.toLocaleTimeString();
+            if (window.gsap) {
+                gsap.fromTo(lastUpdated,
+                    { opacity: 0.4 },
+                    { opacity: 1, duration: 0.4 }
+                );
+            }
+        }
+
+        // filter events
+        tokenFilter.addEventListener("change", () => {
+            activeTokenFilter = tokenFilter.value;
+            renderAll(true);
+        });
+
+        whaleMin.addEventListener("input", () => {
+            whaleMinAmount = parseInt(whaleMin.value, 10) || 0;
+            whaleLabel.textContent = whaleMinAmount;
+            renderWhaleTable(true);
+        });
+
+        refreshBtn.addEventListener("click", () => {
+            if (window.gsap) {
+                gsap.fromTo(refreshBtn,
+                    { scale: 1 },
+                    { scale: 1.05, duration: 0.15, yoyo: true, repeat: 1 }
+                );
+            }
+            refreshData(true);
+        });
+
+        // first load with a small entrance animation
+        if (window.gsap) {
+            gsap.from("h2", {
+                opacity: 0,
+                y: -10,
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            gsap.from(".controls", {
+                opacity: 0,
+                y: 10,
+                duration: 0.4,
+                delay: 0.1,
+                ease: "power2.out"
+            });
+        }
+
+        refreshData(true);
+
+        // auto refresh every 15 seconds without big animations
+        setInterval(() => {
+            refreshData(false);
+        }, 15000);
+    </script>
+
+</body>
+
+</html>

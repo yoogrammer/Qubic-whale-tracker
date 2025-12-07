@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI-Powered Qubic Whale Tracker | Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colors */
+            --bg-start: #010411;
+            --bg-end: #030a1c;
+            --card-base: #0a1125;
+            --muted: #8c9aaf;
+            --accent: #00e4ff; /* Cyan/Electric Blue */
+            --border-color: #0d203f;
+            /* Dimensions */
+            --card-radius: 14px;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            color: #e6eef8;
+            /* Deeper gradient background */
+            background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%) fixed;
+            min-height: 100vh;
+        }
+
+        .wrap {
+            max-width: 1200px; /* Slightly wider */
+            margin: 32px auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            border-radius: var(--card-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 32px;
+            color: #001f3f;
+            box-shadow: 0 0 20px rgba(0, 228, 255, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        p.lead {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        /* Metrics Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--card-base);
+            padding: 18px;
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Card Border Effect */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, var(--accent), transparent, transparent);
+            z-index: 0;
+            animation: rotate 6s linear infinite;
+            opacity: 0.2;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1; /* Keep content above the glow */
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 15px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .num {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        #topTokens {
+            line-height: 1.5;
+        }
+
+        /* Highlight AI Summary Card */
+        #aiSummaryCard {
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 15px rgba(0, 228, 255, 0.15);
+        }
+        
+        #aiSummaryCard::before {
+            animation-duration: 4s; /* Faster animation for highlight */
+            opacity: 0.4;
+        }
+
+        /* Iframe */
+        .iframe-wrap {
+            margin-top: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px; /* Taller iframe */
+            border: 0;
+        }
+
+        /* Controls/Button */
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: var(--bg-start);
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 228, 255, 0.3);
+        }
+        
+        .btn:hover:not(:disabled) {
+            background: #4dffff;
+            box-shadow: 0 0 20px rgba(0, 228, 255, 0.8);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active:not(:disabled) {
+             transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--muted);
+            opacity: 0.7;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        footer {
+            margin-top: 30px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+            opacity: 0.6;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media(max-width:900px) {
+            .grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+            .logo {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <div class="logo">🐋</div>
+            <div>
+                <h1>AI-Powered Qubic Whale Tracker</h1>
+                <p class="lead">Real-time large-transfer monitor for the Qubic blockchain with live updates, AI
+                    insights, and alerts.</p>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button class="btn" id="refreshBtn">🚀 Refresh Data</button>
+            <div style="color:var(--muted); font-size:14px; display:flex; gap:10px; align-items:center;">
+                Last Updated: <span id="lastUpdated">loading...</span> 
+                <span style="font-weight:700; color:var(--accent);">
+                    (Auto-Update: Every 1 Minute)
+                </span>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-content">
+                    <h3>Total Whale Volume (All Time)</h3>
+                    <div class="num" id="totalVolume">—</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h3>Largest Single Transfer</h3>
+                    <div class="num" id="largestTx">—</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h3>Top 3 Tokens by Volume</h3>
+                    <div id="topTokens">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+             <div class="card-content">
+                <h3>Live Whale Transactions Log</h3>
+                <div class="iframe-wrap">
+                    <iframe id="sheetFrame" src="YOUR_GOOGLE_SHEET_EMBED_URL"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="aiSummaryCard" style="margin-top:16px">
+            <div class="card-content">
+                <h3>🤖 AI Market Insight</h3>
+                <div id="aiSummary">Analyzing recent whale activity for key market insights…</div>
+            </div>
+        </div>
+
+        <footer>
+            Built for hackathons • Qubic data via EasyConnect • Interface by Gemini AI
+        </footer>
+    </div>
+
+    <script>
+        // ============ CONFIG: REPLACE THESE TWO LINKS ============
+        const CSV_PUBLISHED_URL = 'YOUR_PUBLISHED_CSV_LINK';
+        const GOOGLE_SHEET_EMBED = 'YOUR_GOOGLE_SHEET_EMBED_URL';
+        // =========================================================
+
+        // Put embed URL into iframe
+        document.getElementById('sheetFrame').src = GOOGLE_SHEET_EMBED;
+
+        // Helper: parse CSV to rows (simple)
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const rows = lines.map(l => {
+                // naive CSV split by comma — this assumes no commas inside fields
+                return l.split(',').map(c => c.replace(/^\"|\"$/g, '').trim());
+            });
+            return rows;
+        }
+
+        async function fetchAndCompute() {
+            // Disable button and show loading status
+            document.getElementById('refreshBtn').disabled = true;
+            document.getElementById('refreshBtn').innerText = 'Loading...';
+            
+            try {
+                // Use cache buster (Date.now()) to ensure the browser fetches a fresh CSV file
+                const res = await fetch(CSV_PUBLISHED_URL + '?t=' + Date.now()); 
+                if (!res.ok) throw new Error('CSV fetch failed: ' + res.status);
+                const text = await res.text();
+                const rows = parseCSV(text);
+                
+                // Update last updated time
+                const now = new Date();
+                document.getElementById('lastUpdated').innerText = now.toLocaleTimeString();
+
+                if (rows.length < 2) {
+                    // No data found (only header row)
+                    document.getElementById('totalVolume').innerText = '0';
+                    document.getElementById('largestTx').innerText = '—';
+                    document.getElementById('topTokens').innerText = '—';
+                    document.getElementById('aiSummary').innerText = 'No whale transactions yet. Awaiting first data push.';
+                    return;
+                }
+
+                // Header row expected: Time,Token,Amount,From Wallet,To Wallet,Tx Hash
+                const header = rows[0].map(h => h.toLowerCase());
+                const idxToken = header.indexOf('token');
+                const idxAmount = header.indexOf('amount');
+                const idxFrom = header.indexOf('from wallet');
+                const idxTo = header.indexOf('to wallet');
+
+                let total = 0;
+                let largest = 0; let largestRow = null;
+                const tokenSums = {};
+
+                for (let i = 1; i < rows.length; i++) {
+                    const r = rows[i];
+                    const rawAmt = r[idxAmount] || '0';
+                    // Clean up and parse amount
+                    const num = parseFloat(rawAmt.replace(/[^0-9.]/g, '')) || 0;
+                    total += num;
+                    if (num > largest) { largest = num; largestRow = r; }
+                    const token = (r[idxToken] || 'UNKNOWN').trim();
+                    tokenSums[token] = (tokenSums[token] || 0) + num;
+                }
+
+                // Update Metric Cards
+                document.getElementById('totalVolume').innerText = formatNumber(total, true); 
+                document.getElementById('largestTx').innerText = largestRow ? `${formatNumber(largest)} ${largestRow[idxToken]} — ${shorten(largestRow[idxFrom])} → ${shorten(largestRow[idxTo])}` : '—';
+
+                // Calculate and display top 3 tokens
+                const tokenPairs = Object.keys(tokenSums).map(k => ({ k, v: tokenSums[k] })).sort((a, b) => b.v - a.v).slice(0, 3);
+                document.getElementById('topTokens').innerHTML = tokenPairs.map(t => `<span style="font-weight:700;">${t.k}</span>: ${formatNumber(t.v, true)}`).join('<br>') || '—';
+
+                // AI Summary (templated)
+                const topToken = tokenPairs[0];
+                let summary = `Total recorded whale volume: ${formatNumber(total, true)}. The largest single transfer was ${formatNumber(largest)} ${largestRow ? largestRow[idxToken] : ''}.`;
+                if (topToken) summary += ` ${topToken.k} has been the most actively moved asset by whales, accounting for ${formatNumber(topToken.v, true)} in total volume.`;
+                document.getElementById('aiSummary').innerText = summary;
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('aiSummary').innerText = 'Error fetching data. Check your CSV link and network connection.';
+            } finally {
+                // Re-enable button after fetch completes (success or failure)
+                document.getElementById('refreshBtn').disabled = false;
+                document.getElementById('refreshBtn').innerText = '🚀 Refresh Data';
+            }
+        }
+
+        // Utility function to shorten wallet addresses
+        function shorten(addr) { if (!addr) return 'Unknown'; return addr.slice(0, 6) + '...' + addr.slice(-6); }
+        
+        // Utility function for number formatting (K, M, B, T)
+        function formatNumber(n, showUnit = false) {
+            const num = Number(n);
+            if (isNaN(num)) return 'N/A';
+            
+            // Fixed decimal places for smaller numbers
+            if (num < 1000) return num.toFixed(2);
+            
+            // Abbreviated formats for large numbers
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + (showUnit ? 'T' : '');
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + (showUnit ? 'B' : '');
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + (showUnit ? 'M' : '');
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + (showUnit ? 'K' : '');
+            
+            return num.toFixed(2);
+        }
+
+        // Attach manual refresh button event
+        document.getElementById('refreshBtn').addEventListener('click', fetchAndCompute);
+
+        // INITIAL LOAD and AUTOMATIC REFRESH
+        fetchAndCompute();
+        
+        // Auto-reload trigger: This line causes the metrics to update every 60 seconds (1 minute)
+        setInterval(fetchAndCompute, 60000); 
+    </script>
+</body>
+</html>

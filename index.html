@@ -3,401 +3,751 @@
 
 <head>
     <meta charset="utf-8" />
+    <title>Qubic Live Dashboard</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>AI-Powered Qubic Whale Tracker | Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* --- General Styling & Layout (DARK/FUTURISTIC) --- */
         :root {
-            /* Colors */
-            --bg-start: #010411;
-            --bg-end: #030a1c;
-            --card-base: #0a1125;
-            --muted: #8c9aaf;
-            --accent: #00e4ff; /* Cyan/Electric Blue */
-            --border-color: #0d203f;
-            /* Dimensions */
-            --card-radius: 14px;
+            --primary-color: #00ffc8;
+            /* Neon/Cyberpunk Green Accent */
+            --secondary-color: #1a2233;
+            /* Darker Surface Color */
+            --background-color: #0b111a;
+            /* Deep Space Background */
+            --card-background: #141c2b;
+            /* Card Surface */
+            --text-color: #e0e0e0;
+            /* Light Text */
+            --muted-text: #8899b8;
+            /* Faded/Muted Text */
+            --success-color: #00ffc8;
+            /* Neon Green Success */
+            --danger-color: #ff3860;
+            /* Neon Red Danger */
+            --border-radius: 4px;
+            --glow-shadow: 0 0 10px rgba(0, 255, 200, 0.4);
         }
 
         body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
             margin: 0;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-            color: #e6eef8;
-            /* Deeper gradient background */
-            background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%) fixed;
-            min-height: 100vh;
+            padding: 0;
+            line-height: 1.6;
         }
 
-        .wrap {
-            max-width: 1200px; /* Slightly wider */
-            margin: 32px auto;
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
             padding: 20px;
         }
 
-        header {
+        /* --- Navigation Bar (Simplified) --- */
+        nav {
+            background-color: var(--card-background);
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.08);
+            border-bottom: 2px solid var(--secondary-color);
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 20px;
-            margin-bottom: 24px;
+            padding: 15px 40px;
+            margin-bottom: 0; /* Adjusted to fit the banner right after */
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .logo {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, var(--accent), #7c3aed);
-            border-radius: var(--card-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        nav strong {
+            font-size: 1.4em;
+            color: var(--primary-color);
             font-weight: 700;
-            font-size: 32px;
-            color: #001f3f;
-            box-shadow: 0 0 20px rgba(0, 228, 255, 0.3);
+            text-shadow: 0 0 5px rgba(0, 255, 200, 0.6);
         }
 
-        h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 800;
+        nav div {
+            display: none;
         }
 
-        p.lead {
-            margin: 8px 0 0;
-            color: var(--muted);
-            font-size: 16px;
-        }
-
-        /* Metrics Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .card {
-            background: var(--card-base);
-            padding: 18px;
-            border-radius: var(--card-radius);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Animated Card Border Effect */
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent, transparent, transparent, var(--accent), transparent, transparent);
-            z-index: 0;
-            animation: rotate 6s linear infinite;
-            opacity: 0.2;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .card-content {
-            position: relative;
-            z-index: 1; /* Keep content above the glow */
-        }
-
-        .card h3 {
-            margin: 0 0 10px;
-            font-size: 15px;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .num {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        #topTokens {
-            line-height: 1.5;
-        }
-
-        /* Highlight AI Summary Card */
-        #aiSummaryCard {
-            border: 1px solid var(--accent);
-            box-shadow: 0 0 15px rgba(0, 228, 255, 0.15);
-        }
-        
-        #aiSummaryCard::before {
-            animation-duration: 4s; /* Faster animation for highlight */
-            opacity: 0.4;
-        }
-
-        /* Iframe */
-        .iframe-wrap {
-            margin-top: 10px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-
-        iframe {
-            width: 100%;
-            height: 600px; /* Taller iframe */
-            border: 0;
-        }
-
-        /* Controls/Button */
-        .controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
+        /* --- NEW: INTRO BANNER STYLING --- */
+        .intro-banner {
+            background-color: var(--secondary-color);
+            padding: 30px 40px;
             margin-bottom: 20px;
-        }
-
-        .btn {
-            background: var(--accent);
-            color: var(--bg-start);
-            padding: 10px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 228, 255, 0.3);
-        }
-        
-        .btn:hover:not(:disabled) {
-            background: #4dffff;
-            box-shadow: 0 0 20px rgba(0, 228, 255, 0.8);
-            transform: translateY(-2px);
-        }
-        
-        .btn:active:not(:disabled) {
-             transform: translateY(0);
-        }
-
-        .btn:disabled {
-            background: var(--muted);
-            opacity: 0.7;
-            cursor: default;
-            box-shadow: none;
-        }
-
-        footer {
-            margin-top: 30px;
-            color: var(--muted);
-            font-size: 13px;
+            border-bottom: 3px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.2);
             text-align: center;
-            opacity: 0.6;
         }
 
-        /* Media Queries for Responsiveness */
-        @media(max-width:900px) {
-            .grid {
-                grid-template-columns: repeat(1, 1fr);
+        .intro-banner h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .intro-banner p {
+            font-size: 1.1em;
+            color: var(--muted-text);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ANIMATED TEXTURE EFFECT */
+        .textured-text {
+            /* The core of the animated texture/glow effect */
+            color: transparent;
+            background-image: linear-gradient(90deg, #141c2b 0%, var(--primary-color) 50%, #141c2b 100%);
+            background-size: 200% 100%;
+            /* Make the gradient double the size */
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: neon-pulse 4s infinite linear;
+            text-shadow: 0 0 8px rgba(0, 255, 200, 0.7), 0 0 15px rgba(0, 255, 200, 0.3);
+        }
+
+        @keyframes neon-pulse {
+            0% {
+                background-position: 200% 0;
             }
-            .logo {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
+
+            100% {
+                background-position: -200% 0;
             }
-            h1 {
-                font-size: 24px;
+        }
+
+        /* --- END INTRO BANNER STYLING --- */
+
+        /* --- Header & Title --- */
+        h2 {
+            font-size: 2.2em;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+        }
+
+        /* --- Controls Section --- */
+        .controls-panel {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--glow-shadow);
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .control-group label {
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        /* Select and Input Range Styling */
+        #tokenFilter,
+        #whaleMin {
+            padding: 10px;
+            border: 1px solid var(--muted-text);
+            border-radius: var(--border-radius);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #tokenFilter:focus,
+        #whaleMin:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 255, 200, 0.3);
+            outline: none;
+        }
+
+        .whale-control-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #whaleMinValue {
+            font-weight: 600;
+            color: var(--primary-color);
+            padding: 5px 10px;
+            background-color: rgba(0, 255, 200, 0.15);
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* Button Styling */
+        .btn {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 200, 0.3);
+            text-transform: uppercase;
+        }
+
+        .btn.primary {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        .btn.primary:hover {
+            background-color: #00ffbe;
+            color: black;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.8);
+        }
+
+        /* --- Table Cards and Layout (MODIFIED TO SINGLE COLUMN) --- */
+        .dashboard-grid {
+            display: grid;
+            /* Changed to a single column */
+            grid-template-columns: 1fr;
+            gap: 30px;
+            /* Increased gap for better separation */
+        }
+
+        .table-card {
+            background-color: var(--card-background);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 10px rgba(26, 34, 51, 0.8);
+            overflow-x: auto;
+            /* Ensures it always spans the single column */
+            grid-column: 1 / -1;
+            border: 1px solid var(--secondary-color);
+        }
+
+        /* Whale Card styling remains strong */
+        .table-card.whale {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 25px rgba(0, 255, 200, 0.6);
+        }
+
+        .table-card h3 {
+            margin-top: 0;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 5px rgba(0, 255, 200, 0.3);
+        }
+
+        /* --- Table Styling --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        table th {
+            background-color: rgba(26, 34, 51, 0.8);
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-size: 0.85em;
+        }
+
+        table tr:hover {
+            background-color: rgba(0, 255, 200, 0.05);
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Change color indicators */
+        .up {
+            color: var(--success-color);
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(0, 255, 200, 0.5);
+        }
+
+        .down {
+            color: var(--danger-color);
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 56, 96, 0.5);
+        }
+
+        /* --- Footer Info --- */
+        #lastUpdated,
+        .data-source-info {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: var(--muted-text);
+            font-size: 0.85em;
+            border-top: 1px dashed var(--secondary-color);
+            padding-top: 15px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .controls-panel {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="wrap">
-        <header>
-            <div class="logo">🐋</div>
-            <div>
-                <h1>AI-Powered Qubic Whale Tracker</h1>
-                <p class="lead">Real-time large-transfer monitor for the Qubic blockchain with live updates, AI
-                    insights, and alerts.</p>
-            </div>
-        </header>
 
-        <div class="controls">
-            <button class="btn" id="refreshBtn">🚀 Refresh Data</button>
-            <div style="color:var(--muted); font-size:14px; display:flex; gap:10px; align-items:center;">
-                Last Updated: <span id="lastUpdated">loading...</span> 
-                <span style="font-weight:700; color:var(--accent);">
-                    (Auto-Update: Every 1 Minute)
-                </span>
-            </div>
+    <nav>
+        <strong>Qubic Dashboard</strong>
+        <div>
         </div>
+    </nav>
 
-        <div class="grid">
-            <div class="card">
-                <div class="card-content">
-                    <h3>Total Whale Volume (All Time)</h3>
-                    <div class="num" id="totalVolume">—</div>
+    <section class="intro-banner">
+        <div class="intro-content">
+            <h1 class="textured-text">Qubic Network</h1>
+            <p>The **Live Dashboard** monitors the **Qubic Layer 1 network**, focusing on real-time token metrics and the
+                decentralized activity of the integrated **Algorith AI network**.</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <h2><i class="fas fa-tachometer-alt"></i> Live Dashboard</h2>
+
+        <section class="controls-panel">
+            <div class="control-group">
+                <label for="tokenFilter">Filter by token</label>
+                <select id="tokenFilter">
+                    <option value="all">All tokens</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="whaleMin">Whale minimum amount</label>
+                <div class="whale-control-display">
+                    <input type="range" id="whaleMin" min="1000" max="200000" step="1000" value="10000">
+                    <span id="whaleMinValue">10000</span>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-content">
-                    <h3>Largest Single Transfer</h3>
-                    <div class="num" id="largestTx">—</div>
-                </div>
+            <div class="control-group" style="flex-grow: 1; min-width: auto;">
+                <label>&nbsp;</label>
+                <button id="refreshBtn" class="btn primary"><i class="fas fa-sync-alt"></i> Refresh now</button>
+            </div>
+        </section>
+
+        <div class="dashboard-grid">
+
+            <div class="table-card" id="tokenCard">
+                <h3><i class="fas fa-coins"></i> Token Prices</h3>
+                <table id="tokenTable">
+                </table>
             </div>
 
-            <div class="card">
-                <div class="card-content">
-                    <h3>Top 3 Tokens by Volume</h3>
-                    <div id="topTokens">—</div>
-                </div>
+            <div class="table-card" id="txCard">
+                <h3><i class="fas fa-exchange-alt"></i> Recent Transactions</h3>
+                <table id="txTable">
+                </table>
             </div>
-        </div>
 
-        <div class="card">
-             <div class="card-content">
-                <h3>Live Whale Transactions Log</h3>
-                <div class="iframe-wrap">
-                    <iframe id="sheetFrame" src="YOUR_GOOGLE_SHEET_EMBED_URL"></iframe>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" id="aiSummaryCard" style="margin-top:16px">
-            <div class="card-content">
-                <h3>🤖 AI Market Insight</h3>
-                <div id="aiSummary">Analyzing recent whale activity for key market insights…</div>
+            <div class="table-card whale" id="whaleCard">
+                <h3><i class="fas fa-fish"></i> Whale Transfers</h3>
+                <table id="whaleTable">
+                </table>
             </div>
         </div>
 
-        <footer>
-            Built for hackathons • Qubic data via EasyConnect • Interface by Gemini AI
-        </footer>
+        <small id="lastUpdated" class="muted">
+            Last updated just now
+        </small>
+        <small class="data-source-info">
+            Live data powered by EasyConnect and Google Sheets (this is a front end sample)
+        </small>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+
     <script>
-        // ============ CONFIG: REPLACE THESE TWO LINKS ============
-        const CSV_PUBLISHED_URL = 'YOUR_PUBLISHED_CSV_LINK';
-        const GOOGLE_SHEET_EMBED = 'YOUR_GOOGLE_SHEET_EMBED_URL';
-        // =========================================================
+        // --- DATA URLs (KEEPING THEM UNCHANGED) ---
+        const TOKEN_URL = "https://docs.google.com/spreadsheets/d/1OYQyoHRuwNgPWL-NU0CK8CD6ccEdpF19828S3G3E0z8/gviz/tq?tqx=out:json&gid=0";
+        const TX_URL = "https://docs.google.com/spreadsheets/d/1OYQyoHRuwNgPWL-NU0CK8CD6ccEdpF19828S3G3E0z8/gviz/tq?tqx=out:json&gid=1";
+        const WHALE_URL = "https://docs.google.com/spreadsheets/d/1OYQyoHRuwNgPWL-NU0CK8CD6ccEdpF19828S3G3E0z8/gviz/tq?tqx=out:json&gid=2";
 
-        // Put embed URL into iframe
-        document.getElementById('sheetFrame').src = GOOGLE_SHEET_EMBED;
 
-        // Helper: parse CSV to rows (simple)
-        function parseCSV(text) {
-            const lines = text.trim().split('\n');
-            const rows = lines.map(l => {
-                // naive CSV split by comma — this assumes no commas inside fields
-                return l.split(',').map(c => c.replace(/^\"|\"$/g, '').trim());
-            });
-            return rows;
+        let tokenRows = [];
+        let txRows = [];
+        let whaleRows = [];
+
+        let activeTokenFilter = "all";
+        let whaleMinAmount = 10000;
+
+        const tokenTable = document.getElementById("tokenTable");
+        const txTable = document.getElementById("txTable");
+        const whaleTable = document.getElementById("whaleTable");
+        const tokenFilter = document.getElementById("tokenFilter");
+        const whaleMin = document.getElementById("whaleMin");
+        const whaleLabel = document.getElementById("whaleMinValue");
+        const refreshBtn = document.getElementById("refreshBtn");
+        const lastUpdated = document.getElementById("lastUpdated");
+        const whaleCard = document.getElementById("whaleCard");
+
+
+        function parseAmount(value) {
+            if (!value) return 0;
+            return parseFloat(String(value).replace(/,/g, "")) || 0;
         }
 
-        async function fetchAndCompute() {
-            // Disable button and show loading status
-            document.getElementById('refreshBtn').disabled = true;
-            document.getElementById('refreshBtn').innerText = 'Loading...';
-            
-            try {
-                // Use cache buster (Date.now()) to ensure the browser fetches a fresh CSV file
-                const res = await fetch(CSV_PUBLISHED_URL + '?t=' + Date.now()); 
-                if (!res.ok) throw new Error('CSV fetch failed: ' + res.status);
-                const text = await res.text();
-                const rows = parseCSV(text);
-                
-                // Update last updated time
-                const now = new Date();
-                document.getElementById('lastUpdated').innerText = now.toLocaleTimeString();
+        // Note: This fetch function is based on Google Spreadsheets' old JSON feed format, 
+        // which may be unreliable or obsolete for live production use.
+        function fetchSheet(url, mapFn) {
+            return fetch(url)
+                .then(res => res.text()) // Fetch as text first
+                .then(text => {
+                    // Extract the JSON part from the response wrapper
+                    const jsonStart = text.indexOf('{');
+                    const jsonEnd = text.lastIndexOf('}');
+                    if (jsonStart === -1 || jsonEnd === -1) {
+                        throw new Error("Invalid Google Sheet response format.");
+                    }
+                    const jsonString = text.substring(jsonStart, jsonEnd + 1);
+                    // The feed data structure is complex and often requires a wrapper like this
+                    const data = JSON.parse(jsonString.replace(/google\.visualization\.Query\.setResponse\(/, '').replace(/\);?$/, ''));
+                    
+                    // Convert Gviz format into a simple array of objects
+                    if (data && data.table && data.table.rows) {
+                        const cols = data.table.cols.map(c => c.label.toLowerCase().replace(/[^a-z0-9]/g, ''));
+                        return data.table.rows.map(row => {
+                            const obj = {};
+                            row.c.forEach((cell, i) => {
+                                // Use the formatted value (f) if available, otherwise use the raw value (v)
+                                let value = cell && cell.f ? cell.f : (cell && cell.v ? cell.v : null);
 
-                if (rows.length < 2) {
-                    // No data found (only header row)
-                    document.getElementById('totalVolume').innerText = '0';
-                    document.getElementById('largestTx').innerText = '—';
-                    document.getElementById('topTokens').innerText = '—';
-                    document.getElementById('aiSummary').innerText = 'No whale transactions yet. Awaiting first data push.';
-                    return;
-                }
+                                // Special handling for dates/times (if needed, but for simplicity here we keep the formatted string)
+                                if (cols[i].includes('time') || cols[i].includes('updated')) {
+                                    value = value ? String(value) : '';
+                                }
 
-                // Header row expected: Time,Token,Amount,From Wallet,To Wallet,Tx Hash
-                const header = rows[0].map(h => h.toLowerCase());
-                const idxToken = header.indexOf('token');
-                const idxAmount = header.indexOf('amount');
-                const idxFrom = header.indexOf('from wallet');
-                const idxTo = header.indexOf('to wallet');
+                                obj[cols[i]] = value;
+                            });
+                            return obj;
+                        }).filter(r => r.token); // Filter out rows without a token
+                    }
+                    return [];
+                })
+                .catch(err => {
+                    console.error("Error loading", url, err);
+                    return [];
+                });
+        }
 
-                let total = 0;
-                let largest = 0; let largestRow = null;
-                const tokenSums = {};
 
-                for (let i = 1; i < rows.length; i++) {
-                    const r = rows[i];
-                    const rawAmt = r[idxAmount] || '0';
-                    // Clean up and parse amount
-                    const num = parseFloat(rawAmt.replace(/[^0-9.]/g, '')) || 0;
-                    total += num;
-                    if (num > largest) { largest = num; largestRow = r; }
-                    const token = (r[idxToken] || 'UNKNOWN').trim();
-                    tokenSums[token] = (tokenSums[token] || 0) + num;
-                }
+        function refreshData(animated = true) {
+            Promise.all([
+                // Fetch Tokens
+                fetchSheet(TOKEN_URL, r => ({
+                    token: r.token,
+                    price: r.price,
+                    change: r.change,
+                    lastupdated: r.lastupdated
+                })),
+                // Fetch Transactions
+                fetchSheet(TX_URL, r => ({
+                    time: r.time,
+                    token: r.token,
+                    amount: r.amount,
+                    from: r.from,
+                    to: r.to
+                })),
+                // Fetch Whales
+                fetchSheet(WHALE_URL, r => ({
+                    time: r.time,
+                    token: r.token,
+                    amount: r.amount,
+                    from: r.from,
+                    to: r.to
+                }))
+            ]).then(([tokens, txs, whales]) => {
+                tokenRows = tokens;
+                txRows = txs;
+                whaleRows = whales;
 
-                // Update Metric Cards
-                document.getElementById('totalVolume').innerText = formatNumber(total, true); 
-                document.getElementById('largestTx').innerText = largestRow ? `${formatNumber(largest)} ${largestRow[idxToken]} — ${shorten(largestRow[idxFrom])} → ${shorten(largestRow[idxTo])}` : '—';
+                updateTokenFilterOptions();
+                renderAll(animated);
+                updateLastUpdated();
+            }).catch(err => {
+                console.error("Failed to load all dashboard data:", err);
+                lastUpdated.textContent = "Data load failed: " + new Date().toLocaleTimeString();
+            });
+        }
 
-                // Calculate and display top 3 tokens
-                const tokenPairs = Object.keys(tokenSums).map(k => ({ k, v: tokenSums[k] })).sort((a, b) => b.v - a.v).slice(0, 3);
-                document.getElementById('topTokens').innerHTML = tokenPairs.map(t => `<span style="font-weight:700;">${t.k}</span>: ${formatNumber(t.v, true)}`).join('<br>') || '—';
+        function updateTokenFilterOptions() {
+            const tokens = Array.from(new Set([
+                ...tokenRows.map(r => r.token),
+                ...txRows.map(r => r.token),
+                ...whaleRows.map(r => r.token)
+            ])).filter(Boolean).sort();
 
-                // AI Summary (templated)
-                const topToken = tokenPairs[0];
-                let summary = `Total recorded whale volume: ${formatNumber(total, true)}. The largest single transfer was ${formatNumber(largest)} ${largestRow ? largestRow[idxToken] : ''}.`;
-                if (topToken) summary += ` ${topToken.k} has been the most actively moved asset by whales, accounting for ${formatNumber(topToken.v, true)} in total volume.`;
-                document.getElementById('aiSummary').innerText = summary;
-
-            } catch (err) {
-                console.error(err);
-                document.getElementById('aiSummary').innerText = 'Error fetching data. Check your CSV link and network connection.';
-            } finally {
-                // Re-enable button after fetch completes (success or failure)
-                document.getElementById('refreshBtn').disabled = false;
-                document.getElementById('refreshBtn').innerText = '🚀 Refresh Data';
+            const current = tokenFilter.value || "all";
+            let html = `<option value="all">All tokens</option>`;
+            tokens.forEach(t => {
+                html += `<option style="background-color: var(--card-background); color: var(--text-color);" value="${t}">${t}</option>`;
+            });
+            tokenFilter.innerHTML = html;
+            if (tokens.includes(current)) {
+                tokenFilter.value = current;
+            } else {
+                tokenFilter.value = "all";
+                activeTokenFilter = "all";
             }
         }
 
-        // Utility function to shorten wallet addresses
-        function shorten(addr) { if (!addr) return 'Unknown'; return addr.slice(0, 6) + '...' + addr.slice(-6); }
-        
-        // Utility function for number formatting (K, M, B, T)
-        function formatNumber(n, showUnit = false) {
-            const num = Number(n);
-            if (isNaN(num)) return 'N/A';
-            
-            // Fixed decimal places for smaller numbers
-            if (num < 1000) return num.toFixed(2);
-            
-            // Abbreviated formats for large numbers
-            if (num >= 1e12) return (num / 1e12).toFixed(2) + (showUnit ? 'T' : '');
-            if (num >= 1e9) return (num / 1e9).toFixed(2) + (showUnit ? 'B' : '');
-            if (num >= 1e6) return (num / 1e6).toFixed(2) + (showUnit ? 'M' : '');
-            if (num >= 1e3) return (num / 1e3).toFixed(2) + (showUnit ? 'K' : '');
-            
-            return num.toFixed(2);
+        function renderTokenTable(animated) {
+            let html = `
+            <tr>
+                <th><i class="fas fa-tag"></i> Token</th>
+                <th><i class="fas fa-dollar-sign"></i> Price</th>
+                <th><i class="fas fa-chart-line"></i> Change</th>
+                <th><i class="fas fa-clock"></i> Updated</th>
+            </tr>
+            `;
+
+            const rows = tokenRows.filter(r =>
+                activeTokenFilter === "all" || r.token === activeTokenFilter
+            );
+
+            rows.forEach(r => {
+                // Ensure r.change is a string for checking the negative sign
+                const changeStr = String(r.change || '');
+                const changeClass = changeStr.startsWith("-") ? "down" : "up";
+                const changeIcon = changeClass === "up" ? '<i class="fas fa-caret-up"></i>' : '<i class="fas fa-caret-down"></i>';
+                html += `
+                <tr>
+                    <td>${r.token}</td>
+                    <td>${r.price}</td>
+                    <td class="${changeClass}">${changeIcon} ${r.change}</td>
+                    <td>${r.lastupdated}</td>
+                </tr>
+            `;
+            });
+
+            tokenTable.innerHTML = html;
+            if (animated) animateTableRows("tokenTable");
         }
 
-        // Attach manual refresh button event
-        document.getElementById('refreshBtn').addEventListener('click', fetchAndCompute);
+        function renderTxTable(animated) {
+            let html = `
+            <tr>
+                <th><i class="fas fa-clock"></i> Time</th>
+                <th><i class="fas fa-tag"></i> Token</th>
+                <th><i class="fas fa-wallet"></i> Amount</th>
+                <th><i class="fas fa-arrow-circle-right"></i> From</th>
+                <th><i class="fas fa-arrow-circle-left"></i> To</th>
+            </tr>
+            `;
 
-        // INITIAL LOAD and AUTOMATIC REFRESH
-        fetchAndCompute();
-        
-        // Auto-reload trigger: This line causes the metrics to update every 60 seconds (1 minute)
-        setInterval(fetchAndCompute, 60000); 
+            const rows = txRows.filter(r =>
+                activeTokenFilter === "all" || r.token === activeTokenFilter
+            );
+
+            rows.forEach(r => {
+                html += `
+                <tr>
+                    <td>${r.time}</td>
+                    <td>${r.token}</td>
+                    <td>${r.amount}</td>
+                    <td>${r.from}</td>
+                    <td>${r.to}</td>
+                </tr>
+            `;
+            });
+
+            txTable.innerHTML = html;
+            if (animated) animateTableRows("txTable");
+        }
+
+        function renderWhaleTable(animated) {
+            let html = `
+            <tr>
+                <th><i class="fas fa-clock"></i> Time</th>
+                <th><i class="fas fa-tag"></i> Token</th>
+                <th><i class="fas fa-hand-holding-usd"></i> Amount</th>
+                <th><i class="fas fa-arrow-circle-right"></i> From</th>
+                <th><i class="fas fa-arrow-circle-left"></i> To</th>
+            </tr>
+            `;
+
+            const rows = whaleRows.filter(r =>
+                parseAmount(r.amount) >= whaleMinAmount &&
+                (activeTokenFilter === "all" || r.token === activeTokenFilter)
+            );
+
+            rows.forEach(r => {
+                html += `
+                <tr>
+                    <td>${r.time}</td>
+                    <td>${r.token}</td>
+                    <td>${r.amount}</td>
+                    <td>${r.from}</td>
+                    <td>${r.to}</td>
+                </tr>
+            `;
+            });
+
+            whaleTable.innerHTML = html;
+            if (animated) {
+                animateTableRows("whaleTable");
+                if (rows.length > 0) {
+                    highlightWhaleCard();
+                }
+            }
+        }
+
+        function renderAll(animated = true) {
+            renderTokenTable(animated);
+            renderTxTable(animated);
+            renderWhaleTable(animated);
+        }
+
+        // --- GSAP ANIMATIONS ---
+
+        function animateTableRows(tableId) {
+            const rows = document.querySelectorAll(`#${tableId} tr:not(:first-child)`);
+            if (!rows.length || !window.gsap) return;
+
+            gsap.from(rows, {
+                opacity: 0,
+                y: 10,
+                stagger: 0.05,
+                duration: 0.5,
+                ease: "power3.out"
+            });
+        }
+
+        function highlightWhaleCard() {
+            if (!window.gsap) return;
+            const card = whaleCard;
+            if (!card) return;
+
+            gsap.to(card, {
+                boxShadow: "0 0 40px rgba(0, 255, 200, 0.8)",
+                scale: 1.01,
+                duration: 0.3,
+                yoyo: true,
+                repeat: 3,
+                ease: "power2.inOut",
+                clearProps: "boxShadow,scale"
+            });
+        }
+
+        function updateLastUpdated() {
+            const now = new Date();
+            lastUpdated.textContent = "Last updated at " + now.toLocaleTimeString();
+            if (window.gsap) {
+                gsap.fromTo(lastUpdated,
+                    { opacity: 0.5, x: -5 },
+                    { opacity: 1, x: 0, duration: 0.4 }
+                );
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+
+        tokenFilter.addEventListener("change", () => {
+            activeTokenFilter = tokenFilter.value;
+            renderAll(true);
+        });
+
+        whaleMin.addEventListener("input", () => {
+            whaleMinAmount = parseInt(whaleMin.value, 10) || 0;
+            whaleLabel.textContent = whaleMinAmount.toLocaleString();
+            renderWhaleTable(true);
+        });
+
+        refreshBtn.addEventListener("click", () => {
+            if (window.gsap) {
+                gsap.fromTo(refreshBtn.querySelector('.fa-sync-alt'),
+                    { rotation: 0 },
+                    { rotation: 360, duration: 0.5, ease: "power1.out" }
+                );
+            }
+            refreshData(true);
+        });
+
+        // --- INITIAL LOAD ANIMATION (MODIFIED) ---
+
+        if (window.gsap) {
+            gsap.set('.container', { opacity: 0 });
+            gsap.set('.intro-banner', { opacity: 0, y: -20 });
+
+            // Animate the banner first
+            gsap.to('.intro-banner', { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" });
+
+            // Animate the main content container
+            gsap.to('.container', { opacity: 1, duration: 0.6, delay: 0.4 });
+
+            gsap.from("h2", {
+                opacity: 0,
+                y: -20,
+                duration: 0.5,
+                delay: 0.5,
+                ease: "power3.out"
+            });
+            gsap.from(".controls-panel", {
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                delay: 0.6,
+                ease: "power3.out"
+            });
+            gsap.from(".table-card", {
+                opacity: 0,
+                scale: 0.95,
+                y: 30,
+                stagger: 0.1,
+                duration: 0.6,
+                delay: 0.7,
+                ease: "power3.out"
+            });
+        }
+
+        // Initial Data Load
+        refreshData(true);
+
+        // auto refresh every 15 seconds
+        setInterval(() => {
+            refreshData(false);
+        }, 15000);
     </script>
+
 </body>
+
 </html>

@@ -14,7 +14,7 @@ Qubic Live Analytics Dashboard is a real time web based monitoring platform buil
 
 The goal of this project is to make Qubic blockchain activity easy to understand for traders, communities, and builders through a clean and visual dashboard without requiring complex tools.
 
-
+new
 
 ## ✅ Key Highlights
 

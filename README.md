@@ -195,5 +195,5 @@ Contributions, UI improvements, and automation suggestions are welcome. Please f
 ## 📝 License
 
 MIT License – Open source and free to use for learning and hackathon purposes.........
-.
+....
 .
